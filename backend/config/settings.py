@@ -23,9 +23,8 @@ DEBUG = env_bool('DEBUG', True)
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
-    os.environ.get("RAILWAY_PUBLIC_DOMAIN", "")
+    "team-task-manager-production-314d.up.railway.app",
 ]
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
