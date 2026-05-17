@@ -20,16 +20,18 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = env_bool('DEBUG', True)
 
+# ---------------------------------------------------------------------------
+# Allowed Hosts
+# ---------------------------------------------------------------------------
 ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "team-task-manager-production-314d.up.railway.app",
 ]
 
-CSRF_TRUSTED_ORIGINS = [
-    "https://team-task-manager-production-314d.up.railway.app",
-]
-
+# ---------------------------------------------------------------------------
+# Installed Apps
+# ---------------------------------------------------------------------------
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,19 +39,28 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    # Third-party apps
     'corsheaders',
     'rest_framework',
     'rest_framework_simplejwt',
+
+    # Local apps
     'users',
     'projects',
 ]
 
+# ---------------------------------------------------------------------------
+# Middleware
+# ---------------------------------------------------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -57,6 +68,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# ---------------------------------------------------------------------------
+# Templates
+# ---------------------------------------------------------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -74,6 +88,9 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# ---------------------------------------------------------------------------
+# Database
+# ---------------------------------------------------------------------------
 if env_bool('USE_POSTGRES'):
     DATABASES = {
         'default': {
@@ -93,6 +110,9 @@ else:
         }
     }
 
+# ---------------------------------------------------------------------------
+# Password Validation
+# ---------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -108,16 +128,25 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# ---------------------------------------------------------------------------
+# Internationalization
+# ---------------------------------------------------------------------------
 LANGUAGE_CODE = 'en-us'
+
 TIME_ZONE = 'UTC'
+
 USE_I18N = True
 USE_TZ = True
 
+# ---------------------------------------------------------------------------
+# Static Files
+# ---------------------------------------------------------------------------
 STATIC_URL = 'static/'
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ---------------------------------------------------------------------------
-# Custom user model
+# Custom User Model
 # ---------------------------------------------------------------------------
 AUTH_USER_MODEL = 'users.User'
 
@@ -129,61 +158,79 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
+
         *(
             ('rest_framework.renderers.BrowsableAPIRenderer',)
             if DEBUG
             else ()
         ),
     ),
+
     'DEFAULT_PARSER_CLASSES': (
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.FormParser',
         'rest_framework.parsers.MultiPartParser',
     ),
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+
+    'DEFAULT_PAGINATION_CLASS':
+        'rest_framework.pagination.PageNumberPagination',
+
     'PAGE_SIZE': 20,
+
     'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S%z',
     'DATE_FORMAT': '%Y-%m-%d',
 }
 
 # ---------------------------------------------------------------------------
-# JWT (djangorestframework-simplejwt)
+# JWT Configuration
 # ---------------------------------------------------------------------------
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(
         minutes=int(os.environ.get('JWT_ACCESS_MINUTES', 60))
     ),
+
     'REFRESH_TOKEN_LIFETIME': timedelta(
         days=int(os.environ.get('JWT_REFRESH_DAYS', 7))
     ),
+
     'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': False,
     'UPDATE_LAST_LOGIN': True,
+
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
+
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+
     'USER_ID_FIELD': 'id',
     'USER_ID_CLAIM': 'user_id',
+
     'TOKEN_TYPE_CLAIM': 'token_type',
 }
 
 # ---------------------------------------------------------------------------
-# CORS (django-cors-headers) — must be high in MIDDLEWARE (already placed)
+# CORS Settings
 # ---------------------------------------------------------------------------
-_cors_origins = os.environ.get(
-    'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173,http://127.0.0.1:5173',
-)
 CORS_ALLOWED_ORIGINS = [
-    origin.strip() for origin in _cors_origins.split(',') if origin.strip()
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+
+    # Vercel frontend
+    "https://team-task-manager-sigma-flame.vercel.app",
 ]
+
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_HEADERS = (
     'accept',
     'accept-encoding',
@@ -195,6 +242,7 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
 CORS_ALLOW_METHODS = (
     'DELETE',
     'GET',
@@ -204,6 +252,15 @@ CORS_ALLOW_METHODS = (
     'PUT',
 )
 
-# Allow all origins in local DEBUG when explicitly enabled
+# ---------------------------------------------------------------------------
+# CSRF Trusted Origins
+# ---------------------------------------------------------------------------
+CSRF_TRUSTED_ORIGINS = [
+    "https://team-task-manager-sigma-flame.vercel.app",
+]
+
+# ---------------------------------------------------------------------------
+# Allow all origins in local DEBUG mode if enabled
+# ---------------------------------------------------------------------------
 if DEBUG and env_bool('CORS_ALLOW_ALL_ORIGINS', False):
     CORS_ALLOW_ALL_ORIGINS = True
