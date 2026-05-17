@@ -7,13 +7,9 @@ import {
   getRefreshToken,
   setTokens,
 } from '../utils/auth'
-
-import axios from 'axios'
-
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 })
-
 let isRefreshing = false
 let failedQueue = []
 
